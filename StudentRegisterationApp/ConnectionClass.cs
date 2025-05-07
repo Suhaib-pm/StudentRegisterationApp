@@ -5,7 +5,7 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace EMPREG
+namespace StudentRegisterationApp
 {
     public class ConnectionClass
     {
@@ -40,5 +40,16 @@ namespace EMPREG
             da.Fill(dt);
             return dt;
         }
+        public int Fun_exeScalar(string sqlquery)
+        {
+            if (con.State == ConnectionState.Open)
+                con.Close();
+            SqlCommand cmd = new SqlCommand(sqlquery, con);
+            con.Open();
+            int id = Convert.ToInt32(cmd.ExecuteScalar());
+            con.Close();
+            return id;
+        }
+
     }
 }

@@ -11,10 +11,10 @@
             <h2>Login</h2>
 
             <label>Username:</label>
-            <asp:TextBox ID="txtLoginUsername" runat="server"></asp:TextBox><br><br>
+            <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox><br><br>
 
             <label>Password:</label>
-            <asp:TextBox ID="txtLoginPassword" runat="server" TextMode="Password"></asp:TextBox><br><br>
+            <asp:TextBox ID="TextBox2" runat="server" TextMode="Password"></asp:TextBox><br><br>
 
             <asp:Button ID="btnLogin" runat="server" Text="Login" OnClick="btnLogin_Click"/>
         </div>

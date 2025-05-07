@@ -1,42 +1,33 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Web.UI;
 
 namespace StudentRegisterationApp
 {
     public partial class Login : Page
     {
+        ConnectionClass conn = new ConnectionClass();
+
         protected void btnLogin_Click(object sender, EventArgs e)
         {
-            string connectionString = @"server=DESKTOP-SOADOMN\SQLEXPRESS;database=StudentRegistrationDB; Integrated security=true";
-
-            using (SqlConnection con = new SqlConnection(connectionString))
+            try
             {
-                try
-                {
-                    con.Open();
-                    string query = "SELECT StudentId FROM Students WHERE Username=@Username AND Password=@Password";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@Username", txtLoginUsername.Text);
-                    cmd.Parameters.AddWithValue("@Password", txtLoginPassword.Text);
+                string query = "SELECT StudentId FROM Students WHERE Username='" + TextBox1.Text + "' AND Password='" + TextBox2.Text + "'";
+                DataTable dt = conn.Fn_Exetendable(query); 
 
-                    object result = cmd.ExecuteScalar();
-
-                    if (result != null)
-                    {
-                        Session["UserId"] = result.ToString();
-                        Response.Redirect("StudentList.aspx");
-                    }
-                    else
-                    {
-                        Response.Write("<script>alert('Invalid login credentials');</script>");
-                    }
-                }
-                catch (Exception ex)
+                if (dt.Rows.Count > 0)
                 {
-                    Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
+                    Session["StudentId"] = dt.Rows[0]["StudentId"].ToString(); 
+                    Response.Redirect("StudentList.aspx");
                 }
+                else
+                {
+                    Response.Write("<script>alert('Invalid login credentials');</script>");
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
             }
         }
     }

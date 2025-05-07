@@ -1,84 +1,54 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Web.UI;
 
 namespace StudentRegisterationApp
 {
     public partial class StudentList : Page
     {
+        ConnectionClass con = new ConnectionClass();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                if (Session["UserId"] != null)
+                if (Session["StudentId"] != null)
                 {
-                    LoadStudentDetails(Session["UserId"].ToString());
-                    LoadQualifications(Session["UserId"].ToString());
+                    string studentId = Session["StudentId"].ToString();
+                    LoadStudentDetails(studentId);
+                    LoadQualifications(studentId);
                 }
                 else
                 {
-                    Response.Redirect("Login.aspx"); 
+                    Response.Redirect("Login.aspx");
                 }
             }
         }
 
-        private void LoadStudentDetails(string userId)
+       
+        private void LoadStudentDetails(string studentId)
         {
-            string connectionString = @"server=DESKTOP-SOADOMN\SQLEXPRESS;database=StudentRegistrationDB; Integrated security=true";
+            string query = "SELECT * FROM Students WHERE StudentId = " + studentId;
+            DataTable dt = con.Fn_Exetendable(query);
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            if (dt.Rows.Count > 0)
             {
-                try
-                {
-                    con.Open();
-                    string query = @"SELECT StudentId, FirstName, LastName, Age, Email, Phone FROM Students WHERE StudentId = @UserId";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        lblStudentId.Text = reader["StudentId"].ToString();
-                        lblFirstName.Text = reader["FirstName"].ToString();
-                        lblLastName.Text = reader["LastName"].ToString();
-                        lblAge.Text = reader["Age"].ToString();
-                        lblEmail.Text = reader["Email"].ToString();
-                        lblPhone.Text = reader["Phone"].ToString();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
-                }
+                Label1.Text = dt.Rows[0]["StudentId"].ToString(); 
+                Label2.Text = dt.Rows[0]["FirstName"].ToString();  
+                Label3.Text = dt.Rows[0]["LastName"].ToString();   
+                Label4.Text = dt.Rows[0]["Age"].ToString();       
+                Label5.Text = dt.Rows[0]["Email"].ToString();      
+                Label6.Text = dt.Rows[0]["Phone"].ToString();      
             }
         }
 
-        private void LoadQualifications(string userId)
+      
+        private void LoadQualifications(string studentId)
         {
-            string connectionString = @"server=DESKTOP-SOADOMN\SQLEXPRESS;database=StudentRegistrationDB; Integrated security=true";
-
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    con.Open();
-                    string query = @"SELECT CourseName, Percentage, YearOfPassing FROM Qualifications WHERE StudentId = @UserId";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-
-                    SqlDataAdapter da = new SqlDataAdapter(cmd);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-
-                    gvQualifications.DataSource = dt;
-                    gvQualifications.DataBind();
-                }
-                catch (Exception ex)
-                {
-                    Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
-                }
-            }
+            string query = "SELECT CourseName, Percentage, YearOfPassing FROM Qualifications WHERE StudentId = " + studentId;
+            DataTable dt = con.Fn_Exetendable(query);
+            GridView1.DataSource = dt;
+            GridView1.DataBind();
         }
     }
 }
